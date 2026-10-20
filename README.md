@@ -81,13 +81,4 @@ namespace. Never commit real credentials.
 - Prefer trusted TLS certificates over disabling certificate verification.
 - Review cluster-scoped monitoring changes separately from workload manifests.
 
-## Red Hat Validated Patterns
 
-This repository borrows GitOps/MLOps design principles but is not the official
-Red Hat OpenShift AI Validated Pattern. See
-[`docs/validated-pattern-alignment.md`](docs/validated-pattern-alignment.md)
-for the current architecture boundaries and known assumptions.
-
-## License
-
-Add the license appropriate for the project before publishing.
