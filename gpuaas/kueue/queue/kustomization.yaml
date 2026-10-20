@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# -----------------------------------------------------------------
+# Production overlay — aggregates all base layers.
+# Point ArgoCD or `oc apply -k` at this directory.
+# -----------------------------------------------------------------
+
+resources:
+ - clusterqueue-inference.yaml
+ - clusterqueue-training.yaml
+ - localqueue-inference.yaml
+ - localqueue-training.yaml
+ - cohort.yaml
+ 

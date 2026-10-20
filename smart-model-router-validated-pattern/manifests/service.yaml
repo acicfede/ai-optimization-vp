@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: smart-model-router
+  labels:
+    app: smart-model-router
+spec:
+  type: ClusterIP
+  selector:
+    app: smart-model-router
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP

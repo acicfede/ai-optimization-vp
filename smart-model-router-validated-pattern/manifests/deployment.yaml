@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smart-model-router
+  labels:
+    app: smart-model-router
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smart-model-router
+  template:
+    metadata:
+      labels:
+        app: smart-model-router
+    spec:
+      containers:
+        - name: python
+          envFrom:
+            - configMapRef:
+                name: smart-router-settings
+          image: image-registry.openshift-image-registry.svc:5000/openshift/python:3.12-minimal-ubi9
+          imagePullPolicy: IfNotPresent
+          command:
+            - python
+            - -u
+            - /app/smart_model_router.py
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: PORT
+              value: "8080"
+            - name: PYTHONDONTWRITEBYTECODE
+              value: "1"
+            - name: MAAS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: smart-router-maas-credentials
+                  key: MAAS_API_KEY
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: router-code
+              mountPath: /app
+      volumes:
+        - name: router-code
+          configMap:
+            name: smart-router-code

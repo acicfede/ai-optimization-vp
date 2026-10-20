@@ -1,0 +1,15 @@
+# Local validation outputs
+.rendered/
+*.rendered.yaml
+
+# Python tooling
+__pycache__/
+*.py[cod]
+.venv/
+
+# Local cluster credentials and environment files
+.kubeconfig
+kubeconfig
+.env
+.env.*
+!.env.example

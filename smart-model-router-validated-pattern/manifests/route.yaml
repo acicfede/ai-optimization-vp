@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: smart-model-router
+  labels:
+    app: smart-model-router
+spec:
+  to:
+    kind: Service
+    name: smart-model-router
+  port:
+    targetPort: http
+  tls:
+    termination: edge

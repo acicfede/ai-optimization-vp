@@ -1,0 +1,368 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Model Router</title>
+<style>
+:root {
+  --ink:#172033; --muted:#64748b; --line:#e2e8f0; --blue:#5965d8;
+  --bg:#f5f7fc; --green:#16836d;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:linear-gradient(135deg,#f7f8ff,#f1f7fb); color:var(--ink);
+}
+header {
+  padding:22px clamp(18px,4vw,44px); background:rgba(255,255,255,.88);
+  border-bottom:1px solid var(--line); display:flex; align-items:center; gap:14px;
+}
+.logo {
+  width:44px;height:44px;border-radius:13px;display:grid;place-items:center;
+  color:white;font-size:22px;font-weight:800;background:linear-gradient(135deg,#5965d8,#7b5bd6);
+  box-shadow:0 7px 18px #5965d833;
+}
+header h1 {font-size:21px;margin:0 0 3px;letter-spacing:-.4px;}
+header p {margin:0;color:var(--muted);font-size:13px;}
+main {
+  width:min(1280px,100%); margin:28px auto; padding:0 20px;
+  display:grid; grid-template-columns:minmax(0,1fr) 285px; gap:22px; align-items:start;
+}
+.panel {
+  background:#fff; border:1px solid #e7ebf3; border-radius:18px;
+  box-shadow:0 10px 35px rgba(37,53,90,.06); overflow:hidden;
+}
+.panel-head {padding:19px 22px;border-bottom:1px solid #edf0f6;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.panel-head h2 {margin:0;font-size:16px;}
+.status {font-size:12px;color:#16836d;background:#e9f8f2;padding:6px 10px;border-radius:999px;}
+.messages {
+  height:54vh; min-height:330px; max-height:650px; overflow-y:auto; padding:12px 22px;
+  scrollbar-color:#c7d2e8 transparent;
+}
+.msg {
+  padding:15px 17px;border-radius:14px;margin:14px 0;max-width:92%;
+  white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;
+  box-shadow:0 4px 14px rgba(30,50,90,.04);
+}
+.user {background:linear-gradient(135deg,#e9edff,#f0eaff);border:1px solid #d9ddff;margin-left:auto;border-bottom-right-radius:5px;}
+.bot {background:linear-gradient(135deg,#effcf8,#f6faff);border:1px solid #cfeee7;border-bottom-left-radius:5px;}
+.bot.complex {background:linear-gradient(135deg,#f0f2ff,#f8f6ff);border-color:#dcdcff;}
+.meta {font-size:12px;font-weight:750;margin-bottom:8px;color:#64748b;letter-spacing:.15px;}
+.msg p {margin:0 0 10px;}
+.msg p:last-child {margin-bottom:0;}
+.msg h1,.msg h2,.msg h3 {line-height:1.3;margin:14px 0 8px;}
+.msg h1 {font-size:1.25em}.msg h2 {font-size:1.13em}.msg h3 {font-size:1.03em}
+.msg ul,.msg ol {padding-left:24px;margin:8px 0;}
+.msg li {margin:4px 0;}
+.msg code.inline-code {
+  background:#e8edf5;color:#27364f;padding:2px 5px;border-radius:5px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;
+}
+.msg pre {
+  white-space:pre-wrap;overflow-x:auto;overflow-wrap:anywhere;margin:12px 0;
+  padding:14px;border-radius:9px;background:#172033;color:#f8fafc;
+  border:1px solid #26334d;font-size:13px;line-height:1.55;
+}
+.msg pre code {font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+.code-label {display:block;font:700 10px/1.2 ui-sans-serif,system-ui,sans-serif;color:#aab8d3;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.composer {padding:17px 20px 20px;border-top:1px solid #edf0f6;background:#fcfdff;}
+.suggestions {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px;}
+.suggestion-card {cursor:pointer;text-align:left;border:1px solid #e3e7f2;background:#fff;border-radius:11px;padding:11px 12px;color:var(--ink);}
+.suggestion-card:hover {border-color:#aeb5ef;background:#fafaff;}
+.suggestion-name {display:block;font-size:12px;font-weight:750;margin-bottom:4px;}
+.suggestion-desc {display:block;font-size:11px;color:var(--muted);line-height:1.4;}
+form {display:flex;gap:10px;align-items:stretch;}
+textarea {
+  flex:1;min-width:0;resize:vertical;min-height:52px;max-height:180px;padding:14px;
+  border:1px solid #dce2ee;border-radius:12px;font:inherit;outline:none;background:#fff;
+}
+textarea:focus {border-color:#8e96e9;box-shadow:0 0 0 3px #5965d81a;}
+button {border:0;border-radius:12px;background:linear-gradient(135deg,#5965d8,#725bd2);color:#fff;font-weight:750;padding:0 22px;cursor:pointer;}
+button:disabled {opacity:.55;cursor:wait;}
+.hint {font-size:11px;color:var(--muted);margin:9px 2px 0;}
+aside {padding:21px;}
+aside h2 {font-size:16px;margin:0 0 17px;}
+.stat {display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:13px 0;border-bottom:1px solid #edf0f6;}
+.stat span:last-child {font-weight:750;font-variant-numeric:tabular-nums;}
+.stat-label {color:#475569;}
+aside hr {border:0;border-top:1px solid #e2e8f0;margin:20px 0;}
+.model-card {border:1px solid #e7ebf3;border-radius:12px;padding:13px;margin-top:11px;}
+.model-card strong {display:block;font-size:13px;margin-bottom:5px;}
+.model-card span {font-size:12px;color:var(--muted);}
+.model-pill {display:inline-block;font-size:11px!important;font-weight:750;color:#5965d8!important;background:#eef0ff;border-radius:999px;padding:5px 8px;margin-top:8px;}
+footer {text-align:center;padding:0 18px 25px;color:#8490a5;font-size:11px;}
+@media(max-width:850px) {
+  main {grid-template-columns:1fr;margin:16px auto;padding:0 12px;}
+  aside {order:2}
+  .messages {height:48vh;min-height:280px;padding:10px 14px;}
+  .suggestions {grid-template-columns:1fr;}
+  .msg {max-width:100%;}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo" aria-hidden="true">↗</div>
+  <div>
+    <h1>Smart Model Router</h1>
+    <p>Intelligent routing for AI requests</p>
+  </div>
+</header>
+
+<main>
+  <section class="panel" aria-label="Chat">
+    <div class="panel-head">
+      <h2>Chat Playground</h2>
+      <span class="status" id="status">Ready for your question.</span>
+    </div>
+    <div class="messages" id="messages" aria-live="polite">
+      <div class="msg bot">
+        <div class="meta">Smart Model Router</div>
+        Hi! Ask a question and I'll route it to the model that best fits the request.
+      </div>
+    </div>
+    <div class="composer">
+      <div class="suggestions" id="suggestions">
+        <button class="suggestion-card" type="button" data-prompt="What is the difference between a list and a tuple in Python?">
+          <span class="suggestion-name">Quick question</span>
+          <span class="suggestion-desc">Get a concise answer to a simple question</span>
+        </button>
+        <button class="suggestion-card" type="button" data-prompt="Write a Python function that checks whether a string is a palindrome, and include an example.">
+          <span class="suggestion-name">Write some code</span>
+          <span class="suggestion-desc">Generate code with an example</span>
+        </button>
+        <button class="suggestion-card" type="button" data-prompt="Explain step by step how to design a reliable multi-service architecture, including trade-offs and failure handling.">
+          <span class="suggestion-name">Complex analysis</span>
+          <span class="suggestion-desc">Explore a multi-step technical problem</span>
+        </button>
+      </div>
+      <form id="form">
+        <textarea id="prompt" rows="2" placeholder="Ask your question..." aria-label="Your question" required></textarea>
+        <button id="send" type="submit">Send ↗</button>
+      </form>
+      <div class="hint">Enter to send · Shift+Enter for a new line</div>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <h2>Request Details</h2>
+    <div class="stat"><span class="stat-label">Selected model</span><span id="model">Waiting for your first request</span></div>
+    <div class="stat"><span class="stat-label">Routing decision</span><span id="reason">Not available yet</span></div>
+    <div class="stat"><span class="stat-label">Response time</span><span id="latency">—</span></div>
+    <hr>
+    <strong>Session Statistics</strong>
+    <div class="stat"><span class="stat-label">🟢 Requests (GPT-OSS)</span><span id="gptCount">0</span></div>
+    <div class="stat"><span class="stat-label">🔵 Requests (Qwen)</span><span id="qwenCount">0</span></div>
+    <div class="stat"><span class="stat-label">◷ Average Response Time</span><span id="avg">—</span></div>
+    <hr>
+    <strong>Available models</strong>
+    <div class="model-card">
+      <strong>GPT-OSS 20B</strong>
+      <span>For simple, direct requests</span><br>
+      <span class="model-pill">Simple route</span>
+    </div>
+    <div class="model-card">
+      <strong>Qwen3 32B</strong>
+      <span>For complex, multi-step requests</span><br>
+      <span class="model-pill">Complex route</span>
+    </div>
+  </aside>
+</main>
+<footer>Smart Model Router · Responses are provided by the configured model endpoint.</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const history = [];
+let gpt = 0, qwen = 0, totalMs = 0, totalRequests = 0;
+
+/* Render a safe Markdown subset using DOM APIs; never inject model output as HTML. */
+function appendInline(parent, text) {
+  const pattern = /(`[^`\n]+`|\*\*[^*\n]+\*\*|__[^_\n]+__|\*[^*\n]+\*|_[^_\n]+_)/g;
+  let last = 0, match;
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > last) parent.appendChild(document.createTextNode(text.slice(last, match.index)));
+    const token = match[0];
+    let node;
+    if (token.startsWith('`')) {
+      node = document.createElement('code');
+      node.className = 'inline-code';
+      node.textContent = token.slice(1, -1);
+    } else if (token.startsWith('**') || token.startsWith('__')) {
+      node = document.createElement('strong');
+      node.textContent = token.slice(2, -2);
+    } else {
+      node = document.createElement('em');
+      node.textContent = token.slice(1, -1);
+    }
+    parent.appendChild(node);
+    last = pattern.lastIndex;
+  }
+  if (last < text.length) parent.appendChild(document.createTextNode(text.slice(last)));
+}
+
+function appendMarkdown(parent, rawText) {
+  const lines = String(rawText ?? '').replace(/\r\n?/g, '\n').split('\n');
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    const fence = line.match(/^\s*```([^\s`]*)\s*$/);
+    if (fence) {
+      const language = fence[1] || 'code';
+      i++;
+      const codeLines = [];
+      while (i < lines.length && !/^\s*```\s*$/.test(lines[i])) codeLines.push(lines[i++]);
+      if (i < lines.length) i++;
+      const pre = document.createElement('pre');
+      const label = document.createElement('span');
+      label.className = 'code-label';
+      label.textContent = language;
+      const code = document.createElement('code');
+      code.textContent = codeLines.join('\n');
+      pre.append(label, code);
+      parent.appendChild(pre);
+      continue;
+    }
+    if (!line.trim()) { i++; continue; }
+    const heading = line.match(/^\s{0,3}(#{1,3})\s+(.+)$/);
+    if (heading) {
+      const h = document.createElement('h' + heading[1].length);
+      appendInline(h, heading[2]);
+      parent.appendChild(h);
+      i++;
+      continue;
+    }
+    const ordered = line.match(/^\s*\d+[.)]\s+(.+)$/);
+    const unordered = line.match(/^\s*[-*+]\s+(.+)$/);
+    if (ordered || unordered) {
+      const list = document.createElement(ordered ? 'ol' : 'ul');
+      const rx = ordered ? /^\s*\d+[.)]\s+(.+)$/ : /^\s*[-*+]\s+(.+)$/;
+      while (i < lines.length) {
+        const m = lines[i].match(rx);
+        if (!m) break;
+        const li = document.createElement('li');
+        appendInline(li, m[1]);
+        list.appendChild(li);
+        i++;
+      }
+      parent.appendChild(list);
+      continue;
+    }
+    const paragraph = document.createElement('p');
+    const paragraphLines = [];
+    while (i < lines.length && lines[i].trim() &&
+      !/^\s*```/.test(lines[i]) &&
+      !/^\s{0,3}#{1,3}\s+/.test(lines[i]) &&
+      !/^\s*[-*+]\s+/.test(lines[i]) &&
+      !/^\s*\d+[.)]\s+/.test(lines[i])) paragraphLines.push(lines[i++]);
+    paragraphLines.forEach((part, index) => {
+      if (index) paragraph.appendChild(document.createElement('br'));
+      appendInline(paragraph, part);
+    });
+    parent.appendChild(paragraph);
+  }
+}
+
+function addMessage(text, who, modelClass = '') {
+  const div = document.createElement('div');
+  div.className = 'msg ' + who + (modelClass ? ' ' + modelClass : '');
+  if (who === 'bot') {
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = 'Smart Model Router';
+    div.appendChild(meta);
+    appendMarkdown(div, text);
+  } else {
+    div.appendChild(document.createTextNode(String(text ?? '')));
+  }
+  $('messages').appendChild(div);
+  $('messages').scrollTop = $('messages').scrollHeight;
+  return div;
+}
+
+document.querySelectorAll('.suggestion-card').forEach(card => {
+  card.addEventListener('click', () => {
+    $('prompt').value = card.dataset.prompt || '';
+    $('prompt').focus();
+  });
+});
+
+$('newChat')?.addEventListener('click', () => {
+  history.length = 0;
+  $('messages').replaceChildren();
+  addMessage("Hi! Ask a question and I'll route it to the model that best fits the request.", 'bot');
+  $('model').textContent = 'Waiting for your first request';
+  $('reason').textContent = 'Not available yet';
+  $('latency').textContent = '—';
+  $('gptCount').textContent = '0';
+  $('qwenCount').textContent = '0';
+  $('avg').textContent = '—';
+  $('status').textContent = 'Ready for your question.';
+  gpt = 0; qwen = 0; totalMs = 0; totalRequests = 0;
+  $('suggestions').style.display = '';
+});
+
+$('form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const text = $('prompt').value.trim();
+  if (!text) return;
+  addMessage(text, 'user');
+  history.push({ role: 'user', content: text });
+  $('prompt').value = '';
+  $('suggestions').style.display = 'none';
+  $('send').disabled = true;
+  $('status').textContent = 'The model is processing your request...';
+  const started = performance.now();
+  try {
+    const response = await fetch('/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: history, max_tokens: 700, temperature: 0.2 })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      const detail = data.detail || data.error || ('HTTP ' + response.status);
+      throw new Error(typeof detail === 'string' ? detail : JSON.stringify(detail));
+    }
+    const choice = data.choices?.[0]?.message || {};
+    let answer = typeof choice.content === 'string' ? choice.content : '';
+    if (Array.isArray(choice.content)) {
+      answer = choice.content.map(part => typeof part === 'string' ? part : (part.text || '')).join('');
+    }
+    answer = answer.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+    if (!answer) answer = 'Il modello non ha restituito testo visibile. Prova a inviare nuovamente la domanda.';
+    const route = data.router || {};
+    const model = route.selected_model || data.model || 'Modello non specificato';
+    const complex = route.route === 'complex' || model.toLowerCase().includes('qwen');
+    addMessage(answer, 'bot', complex ? 'complex' : '');
+    history.push({ role: 'assistant', content: answer });
+    const elapsed = (performance.now() - started) / 1000;
+    $('model').textContent = model;
+    $('reason').textContent = complex ? 'Classified as a complex request' : 'Classified as a simple request';
+    $('latency').textContent = elapsed.toFixed(2) + ' seconds';
+    if (complex) qwen++; else gpt++;
+    totalRequests++;
+    totalMs += elapsed * 1000;
+    $('gptCount').textContent = gpt;
+    $('qwenCount').textContent = qwen;
+    $('avg').textContent = (totalMs / totalRequests / 1000).toFixed(2) + ' s';
+    $('status').textContent = 'Request completed.';
+  } catch (error) {
+    addMessage('Error: ' + error.message, 'bot', 'complex');
+    $('status').textContent = 'Request failed.';
+  } finally {
+    $('send').disabled = false;
+    $('prompt').focus();
+  }
+});
+
+$('prompt').addEventListener('keydown', event => {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    $('form').requestSubmit();
+  }
+});
+</script>
+</body>
+</html>

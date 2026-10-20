@@ -1,0 +1,32 @@
+# Smart Model Router - example configuration
+# Replace these values for your target environment.
+
+namespace: smart-model-router
+
+image:
+  repository: image-registry.openshift-image-registry.svc:5000/openshift/python
+  tag: "3.12-minimal-ubi9"
+  pullPolicy: IfNotPresent
+
+service:
+  port: 8080
+
+route:
+  enabled: true
+  host: ""
+  tlsTermination: edge
+
+maas:
+  url: "https://maas.example.com"
+  tlsVerify: true
+  apiKeySecretName: smart-router-maas-credentials
+  apiKeySecretKey: MAAS_API_KEY
+
+models:
+  # Replace these identifiers with models available in your MaaS environment.
+  simple: "publishers/agent/models/gpt-oss-20b"
+  complex: "publishers/agent/models/qwen3-32b"
+
+classifier:
+  url: "http://llama-predictor.ai-ops.svc.cluster.local"
+  timeoutSeconds: 8

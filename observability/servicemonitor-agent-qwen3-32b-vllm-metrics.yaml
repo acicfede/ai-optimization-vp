@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    monitoring.opendatahub.io/scrape: 'true'
+  name: qwen3-32b-vllm-metrics
+  namespace: agent
+spec:
+  endpoints:
+  - path: /metrics
+    port: qwen3-32b-vllm-metrics
+    scheme: http
+  namespaceSelector: {}
+  selector:
+    matchLabels:
+      name: qwen3-32b-vllm-metrics

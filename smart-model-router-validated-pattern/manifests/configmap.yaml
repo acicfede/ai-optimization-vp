@@ -1,0 +1,559 @@
+apiVersion: v1
+data:
+  index.html: "\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta
+    name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>Smart
+    Model Router</title>\n<style>\n:root {\n  --ink:#172033; --muted:#64748b; --line:#e2e8f0;
+    --blue:#5965d8;\n  --bg:#f5f7fc; --green:#16836d;\n}\n* { box-sizing:border-box;
+    }\nbody {\n  margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,\"Segoe
+    UI\",sans-serif;\n  background:linear-gradient(135deg,#f7f8ff,#f1f7fb); color:var(--ink);\n}\nheader
+    {\n  padding:22px clamp(18px,4vw,44px); background:rgba(255,255,255,.88);\n  border-bottom:1px
+    solid var(--line); display:flex; align-items:center; gap:14px;\n}\n.logo {\n  width:44px;height:44px;border-radius:13px;display:grid;place-items:center;\n
+    \ color:white;font-size:22px;font-weight:800;background:linear-gradient(135deg,#5965d8,#7b5bd6);\n
+    \ box-shadow:0 7px 18px #5965d833;\n}\nheader h1 {font-size:21px;margin:0 0 3px;letter-spacing:-.4px;}\nheader
+    p {margin:0;color:var(--muted);font-size:13px;}\nmain {\n  width:min(1280px,100%);
+    margin:28px auto; padding:0 20px;\n  display:grid; grid-template-columns:minmax(0,1fr)
+    285px; gap:22px; align-items:start;\n}\n.panel {\n  background:#fff; border:1px
+    solid #e7ebf3; border-radius:18px;\n  box-shadow:0 10px 35px rgba(37,53,90,.06);
+    overflow:hidden;\n}\n.panel-head {padding:19px 22px;border-bottom:1px solid #edf0f6;display:flex;align-items:center;justify-content:space-between;gap:12px;}\n.panel-head
+    h2 {margin:0;font-size:16px;}\n.status {font-size:12px;color:#16836d;background:#e9f8f2;padding:6px
+    10px;border-radius:999px;}\n.messages {\n  height:54vh; min-height:330px; max-height:650px;
+    overflow-y:auto; padding:12px 22px;\n  scrollbar-color:#c7d2e8 transparent;\n}\n.msg
+    {\n  padding:15px 17px;border-radius:14px;margin:14px 0;max-width:92%;\n  white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;\n
+    \ box-shadow:0 4px 14px rgba(30,50,90,.04);\n}\n.user {background:linear-gradient(135deg,#e9edff,#f0eaff);border:1px
+    solid #d9ddff;margin-left:auto;border-bottom-right-radius:5px;}\n.bot {background:linear-gradient(135deg,#effcf8,#f6faff);border:1px
+    solid #cfeee7;border-bottom-left-radius:5px;}\n.bot.complex {background:linear-gradient(135deg,#f0f2ff,#f8f6ff);border-color:#dcdcff;}\n.meta
+    {font-size:12px;font-weight:750;margin-bottom:8px;color:#64748b;letter-spacing:.15px;}\n.msg
+    p {margin:0 0 10px;}\n.msg p:last-child {margin-bottom:0;}\n.msg h1,.msg h2,.msg
+    h3 {line-height:1.3;margin:14px 0 8px;}\n.msg h1 {font-size:1.25em}.msg h2 {font-size:1.13em}.msg
+    h3 {font-size:1.03em}\n.msg ul,.msg ol {padding-left:24px;margin:8px 0;}\n.msg
+    li {margin:4px 0;}\n.msg code.inline-code {\n  background:#e8edf5;color:#27364f;padding:2px
+    5px;border-radius:5px;\n  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;\n}\n.msg
+    pre {\n  white-space:pre-wrap;overflow-x:auto;overflow-wrap:anywhere;margin:12px
+    0;\n  padding:14px;border-radius:9px;background:#172033;color:#f8fafc;\n  border:1px
+    solid #26334d;font-size:13px;line-height:1.55;\n}\n.msg pre code {font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}\n.code-label
+    {display:block;font:700 10px/1.2 ui-sans-serif,system-ui,sans-serif;color:#aab8d3;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}\n.composer
+    {padding:17px 20px 20px;border-top:1px solid #edf0f6;background:#fcfdff;}\n.suggestions
+    {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px;}\n.suggestion-card
+    {cursor:pointer;text-align:left;border:1px solid #e3e7f2;background:#fff;border-radius:11px;padding:11px
+    12px;color:var(--ink);}\n.suggestion-card:hover {border-color:#aeb5ef;background:#fafaff;}\n.suggestion-name
+    {display:block;font-size:12px;font-weight:750;margin-bottom:4px;}\n.suggestion-desc
+    {display:block;font-size:11px;color:var(--muted);line-height:1.4;}\nform {display:flex;gap:10px;align-items:stretch;}\ntextarea
+    {\n  flex:1;min-width:0;resize:vertical;min-height:52px;max-height:180px;padding:14px;\n
+    \ border:1px solid #dce2ee;border-radius:12px;font:inherit;outline:none;background:#fff;\n}\ntextarea:focus
+    {border-color:#8e96e9;box-shadow:0 0 0 3px #5965d81a;}\nbutton {border:0;border-radius:12px;background:linear-gradient(135deg,#5965d8,#725bd2);color:#fff;font-weight:750;padding:0
+    22px;cursor:pointer;}\nbutton:disabled {opacity:.55;cursor:wait;}\n.hint {font-size:11px;color:var(--muted);margin:9px
+    2px 0;}\naside {padding:21px;}\naside h2 {font-size:16px;margin:0 0 17px;}\n.stat
+    {display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:13px
+    0;border-bottom:1px solid #edf0f6;}\n.stat span:last-child {font-weight:750;font-variant-numeric:tabular-nums;}\n.stat-label
+    {color:#475569;}\naside hr {border:0;border-top:1px solid #e2e8f0;margin:20px
+    0;}\n.model-card {border:1px solid #e7ebf3;border-radius:12px;padding:13px;margin-top:11px;}\n.model-card
+    strong {display:block;font-size:13px;margin-bottom:5px;}\n.model-card span {font-size:12px;color:var(--muted);}\n.model-pill
+    {display:inline-block;font-size:11px!important;font-weight:750;color:#5965d8!important;background:#eef0ff;border-radius:999px;padding:5px
+    8px;margin-top:8px;}\nfooter {text-align:center;padding:0 18px 25px;color:#8490a5;font-size:11px;}\n@media(max-width:850px)
+    {\n  main {grid-template-columns:1fr;margin:16px auto;padding:0 12px;}\n  aside
+    {order:2}\n  .messages {height:48vh;min-height:280px;padding:10px 14px;}\n  .suggestions
+    {grid-template-columns:1fr;}\n  .msg {max-width:100%;}\n}\n</style>\n</head>\n<body>\n<header>\n
+    \ <div class=\"logo\" aria-hidden=\"true\">↗</div>\n  <div>\n    <h1>Smart Model
+    Router</h1>\n    <p>Intelligent routing for AI requests</p>\n  </div>\n</header>\n\n<main>\n
+    \ <section class=\"panel\" aria-label=\"Chat\">\n    <div class=\"panel-head\">\n
+    \     <h2>Chat Playground</h2>\n      <span class=\"status\" id=\"status\">Ready
+    for your question.</span>\n    </div>\n    <div class=\"messages\" id=\"messages\"
+    aria-live=\"polite\">\n      <div class=\"msg bot\">\n        <div class=\"meta\">Smart
+    Model Router</div>\n        Hi! Ask a question and I'll route it to the model
+    that best fits the request.\n      </div>\n    </div>\n    <div class=\"composer\">\n
+    \     <div class=\"suggestions\" id=\"suggestions\">\n        <button class=\"suggestion-card\"
+    type=\"button\" data-prompt=\"What is the difference between a list and a tuple
+    in Python?\">\n          <span class=\"suggestion-name\">Quick question</span>\n
+    \         <span class=\"suggestion-desc\">Get a concise answer to a simple question</span>\n
+    \       </button>\n        <button class=\"suggestion-card\" type=\"button\" data-prompt=\"Write
+    a Python function that checks whether a string is a palindrome, and include an
+    example.\">\n          <span class=\"suggestion-name\">Write some code</span>\n
+    \         <span class=\"suggestion-desc\">Generate code with an example</span>\n
+    \       </button>\n        <button class=\"suggestion-card\" type=\"button\" data-prompt=\"Explain
+    step by step how to design a reliable multi-service architecture, including trade-offs
+    and failure handling.\">\n          <span class=\"suggestion-name\">Complex analysis</span>\n
+    \         <span class=\"suggestion-desc\">Explore a multi-step technical problem</span>\n
+    \       </button>\n      </div>\n      <form id=\"form\">\n        <textarea id=\"prompt\"
+    rows=\"2\" placeholder=\"Ask your question...\" aria-label=\"Your question\" required></textarea>\n
+    \       <button id=\"send\" type=\"submit\">Send ↗</button>\n      </form>\n      <div
+    class=\"hint\">Enter to send · Shift+Enter for a new line</div>\n    </div>\n
+    \ </section>\n\n  <aside class=\"panel\">\n    <h2>Request Details</h2>\n    <div
+    class=\"stat\"><span class=\"stat-label\">Selected model</span><span id=\"model\">Waiting
+    for your first request</span></div>\n    <div class=\"stat\"><span class=\"stat-label\">Routing
+    decision</span><span id=\"reason\">Not available yet</span></div>\n    <div class=\"stat\"><span
+    class=\"stat-label\">Response time</span><span id=\"latency\">—</span></div>\n
+    \   <hr>\n    <strong>Session Statistics</strong>\n    <div class=\"stat\"><span
+    class=\"stat-label\">\U0001F7E2 Requests (GPT-OSS)</span><span id=\"gptCount\">0</span></div>\n
+    \   <div class=\"stat\"><span class=\"stat-label\">\U0001F535 Requests (Qwen)</span><span
+    id=\"qwenCount\">0</span></div>\n    <div class=\"stat\"><span class=\"stat-label\">◷
+    Average Response Time</span><span id=\"avg\">—</span></div>\n    <hr>\n    <strong>Available
+    models</strong>\n    <div class=\"model-card\">\n      <strong>GPT-OSS 20B</strong>\n
+    \     <span>For simple, direct requests</span><br>\n      <span class=\"model-pill\">Simple
+    route</span>\n    </div>\n    <div class=\"model-card\">\n      <strong>Qwen3
+    32B</strong>\n      <span>For complex, multi-step requests</span><br>\n      <span
+    class=\"model-pill\">Complex route</span>\n    </div>\n  </aside>\n</main>\n<footer>Smart
+    Model Router · Responses are provided by the configured model endpoint.</footer>\n\n<script>\nconst
+    $ = id => document.getElementById(id);\nconst history = [];\nlet gpt = 0, qwen
+    = 0, totalMs = 0, totalRequests = 0;\n\n/* Render a safe Markdown subset using
+    DOM APIs; never inject model output as HTML. */\nfunction appendInline(parent,
+    text) {\n  const pattern = /(`[^`\\n]+`|\\*\\*[^*\\n]+\\*\\*|__[^_\\n]+__|\\*[^*\\n]+\\*|_[^_\\n]+_)/g;\n
+    \ let last = 0, match;\n  while ((match = pattern.exec(text)) !== null) {\n    if
+    (match.index > last) parent.appendChild(document.createTextNode(text.slice(last,
+    match.index)));\n    const token = match[0];\n    let node;\n    if (token.startsWith('`'))
+    {\n      node = document.createElement('code');\n      node.className = 'inline-code';\n
+    \     node.textContent = token.slice(1, -1);\n    } else if (token.startsWith('**')
+    || token.startsWith('__')) {\n      node = document.createElement('strong');\n
+    \     node.textContent = token.slice(2, -2);\n    } else {\n      node = document.createElement('em');\n
+    \     node.textContent = token.slice(1, -1);\n    }\n    parent.appendChild(node);\n
+    \   last = pattern.lastIndex;\n  }\n  if (last < text.length) parent.appendChild(document.createTextNode(text.slice(last)));\n}\n\nfunction
+    appendMarkdown(parent, rawText) {\n  const lines = String(rawText ?? '').replace(/\\r\\n?/g,
+    '\\n').split('\\n');\n  let i = 0;\n  while (i < lines.length) {\n    const line
+    = lines[i];\n    const fence = line.match(/^\\s*```([^\\s`]*)\\s*$/);\n    if
+    (fence) {\n      const language = fence[1] || 'code';\n      i++;\n      const
+    codeLines = [];\n      while (i < lines.length && !/^\\s*```\\s*$/.test(lines[i]))
+    codeLines.push(lines[i++]);\n      if (i < lines.length) i++;\n      const pre
+    = document.createElement('pre');\n      const label = document.createElement('span');\n
+    \     label.className = 'code-label';\n      label.textContent = language;\n      const
+    code = document.createElement('code');\n      code.textContent = codeLines.join('\\n');\n
+    \     pre.append(label, code);\n      parent.appendChild(pre);\n      continue;\n
+    \   }\n    if (!line.trim()) { i++; continue; }\n    const heading = line.match(/^\\s{0,3}(#{1,3})\\s+(.+)$/);\n
+    \   if (heading) {\n      const h = document.createElement('h' + heading[1].length);\n
+    \     appendInline(h, heading[2]);\n      parent.appendChild(h);\n      i++;\n
+    \     continue;\n    }\n    const ordered = line.match(/^\\s*\\d+[.)]\\s+(.+)$/);\n
+    \   const unordered = line.match(/^\\s*[-*+]\\s+(.+)$/);\n    if (ordered || unordered)
+    {\n      const list = document.createElement(ordered ? 'ol' : 'ul');\n      const
+    rx = ordered ? /^\\s*\\d+[.)]\\s+(.+)$/ : /^\\s*[-*+]\\s+(.+)$/;\n      while
+    (i < lines.length) {\n        const m = lines[i].match(rx);\n        if (!m) break;\n
+    \       const li = document.createElement('li');\n        appendInline(li, m[1]);\n
+    \       list.appendChild(li);\n        i++;\n      }\n      parent.appendChild(list);\n
+    \     continue;\n    }\n    const paragraph = document.createElement('p');\n    const
+    paragraphLines = [];\n    while (i < lines.length && lines[i].trim() &&\n      !/^\\s*```/.test(lines[i])
+    &&\n      !/^\\s{0,3}#{1,3}\\s+/.test(lines[i]) &&\n      !/^\\s*[-*+]\\s+/.test(lines[i])
+    &&\n      !/^\\s*\\d+[.)]\\s+/.test(lines[i])) paragraphLines.push(lines[i++]);\n
+    \   paragraphLines.forEach((part, index) => {\n      if (index) paragraph.appendChild(document.createElement('br'));\n
+    \     appendInline(paragraph, part);\n    });\n    parent.appendChild(paragraph);\n
+    \ }\n}\n\nfunction addMessage(text, who, modelClass = '') {\n  const div = document.createElement('div');\n
+    \ div.className = 'msg ' + who + (modelClass ? ' ' + modelClass : '');\n  if (who
+    === 'bot') {\n    const meta = document.createElement('div');\n    meta.className
+    = 'meta';\n    meta.textContent = 'Smart Model Router';\n    div.appendChild(meta);\n
+    \   appendMarkdown(div, text);\n  } else {\n    div.appendChild(document.createTextNode(String(text
+    ?? '')));\n  }\n  $('messages').appendChild(div);\n  $('messages').scrollTop =
+    $('messages').scrollHeight;\n  return div;\n}\n\ndocument.querySelectorAll('.suggestion-card').forEach(card
+    => {\n  card.addEventListener('click', () => {\n    $('prompt').value = card.dataset.prompt
+    || '';\n    $('prompt').focus();\n  });\n});\n\n$('newChat')?.addEventListener('click',
+    () => {\n  history.length = 0;\n  $('messages').replaceChildren();\n  addMessage(\"Hi!
+    Ask a question and I'll route it to the model that best fits the request.\", 'bot');\n
+    \ $('model').textContent = 'Waiting for your first request';\n  $('reason').textContent
+    = 'Not available yet';\n  $('latency').textContent = '—';\n  $('gptCount').textContent
+    = '0';\n  $('qwenCount').textContent = '0';\n  $('avg').textContent = '—';\n  $('status').textContent
+    = 'Ready for your question.';\n  gpt = 0; qwen = 0; totalMs = 0; totalRequests
+    = 0;\n  $('suggestions').style.display = '';\n});\n\n$('form').addEventListener('submit',
+    async event => {\n  event.preventDefault();\n  const text = $('prompt').value.trim();\n
+    \ if (!text) return;\n  addMessage(text, 'user');\n  history.push({ role: 'user',
+    content: text });\n  $('prompt').value = '';\n  $('suggestions').style.display
+    = 'none';\n  $('send').disabled = true;\n  $('status').textContent = 'The model
+    is processing your request...';\n  const started = performance.now();\n  try {\n
+    \   const response = await fetch('/v1/chat/completions', {\n      method: 'POST',\n
+    \     headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({
+    messages: history, max_tokens: 700, temperature: 0.2 })\n    });\n    const data
+    = await response.json();\n    if (!response.ok) {\n      const detail = data.detail
+    || data.error || ('HTTP ' + response.status);\n      throw new Error(typeof detail
+    === 'string' ? detail : JSON.stringify(detail));\n    }\n    const choice = data.choices?.[0]?.message
+    || {};\n    let answer = typeof choice.content === 'string' ? choice.content :
+    '';\n    if (Array.isArray(choice.content)) {\n      answer = choice.content.map(part
+    => typeof part === 'string' ? part : (part.text || '')).join('');\n    }\n    answer
+    = answer.replace(/<think>[\\s\\S]*?<\\/think>/gi, '').trim();\n    if (!answer)
+    answer = 'Il modello non ha restituito testo visibile. Prova a inviare nuovamente
+    la domanda.';\n    const route = data.router || {};\n    const model = route.selected_model
+    || data.model || 'Modello non specificato';\n    const complex = route.route ===
+    'complex' || model.toLowerCase().includes('qwen');\n    addMessage(answer, 'bot',
+    complex ? 'complex' : '');\n    history.push({ role: 'assistant', content: answer
+    });\n    const elapsed = (performance.now() - started) / 1000;\n    $('model').textContent
+    = model;\n    $('reason').textContent = complex ? 'Classified as a complex request'
+    : 'Classified as a simple request';\n    $('latency').textContent = elapsed.toFixed(2)
+    + ' seconds';\n    if (complex) qwen++; else gpt++;\n    totalRequests++;\n    totalMs
+    += elapsed * 1000;\n    $('gptCount').textContent = gpt;\n    $('qwenCount').textContent
+    = qwen;\n    $('avg').textContent = (totalMs / totalRequests / 1000).toFixed(2)
+    + ' s';\n    $('status').textContent = 'Request completed.';\n  } catch (error)
+    {\n    addMessage('Error: ' + error.message, 'bot', 'complex');\n    $('status').textContent
+    = 'Request failed.';\n  } finally {\n    $('send').disabled = false;\n    $('prompt').focus();\n
+    \ }\n});\n\n$('prompt').addEventListener('keydown', event => {\n  if (event.key
+    === 'Enter' && !event.shiftKey) {\n    event.preventDefault();\n    $('form').requestSubmit();\n
+    \ }\n});\n</script>\n</body>\n</html>\n\n"
+  smart_model_router.py: |
+    #!/usr/bin/env python3
+    """Smart Model Router: Llama classifies; MaaS serves the selected model.
+
+    Environment:
+      MAAS_URL or MAAS_BASE_URL: MaaS OpenAI-compatible base URL
+      MAAS_API_KEY: MaaS bearer token (read from an OpenShift Secret)
+      LLAMA_BASE_URL: Llama OpenAI-compatible base URL (default: in-cluster service)
+      LLAMA_MODEL: model name exposed by Llama (default: llama)
+      LLAMA_TIMEOUT: classification timeout in seconds (default: 8)
+      MAAS_TLS_VERIFY: verify MaaS TLS certificate (default: true)
+      PORT or ROUTER_PORT: HTTP listen port (default: 8080)
+    """
+    import json
+    import os
+    import re
+    import ssl
+    import time
+    import urllib.error
+    import urllib.request
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from pathlib import Path
+    from urllib.parse import urlparse
+
+    MAAS_BASE_URL = os.environ.get(
+        "MAAS_BASE_URL",
+        os.environ.get(
+            "MAAS_URL",
+            "https://maas.example.com",
+        ),
+    ).rstrip("/")
+    ROUTER_PORT = int(os.environ.get("ROUTER_PORT", os.environ.get("PORT", "8080")))
+    MAAS_API_KEY = os.environ.get("MAAS_API_KEY", "")
+    MAAS_TLS_VERIFY = os.environ.get("MAAS_TLS_VERIFY", "true").lower() in (
+        "true", "1", "yes"
+    )
+    REQUEST_TIMEOUT = int(os.environ.get("REQUEST_TIMEOUT", "300"))
+
+    LLAMA_BASE_URL = os.environ.get(
+        "LLAMA_BASE_URL",
+        "http://llama-predictor.ai-ops.svc.cluster.local",
+    ).rstrip("/")
+    LLAMA_MODEL = os.environ.get("LLAMA_MODEL", "llama")
+    LLAMA_TIMEOUT = float(os.environ.get("LLAMA_TIMEOUT", "8"))
+
+    MODEL_MAP = {
+        "simple": os.environ.get(
+            "SIMPLE_MODEL",
+            "publishers/agent/models/gpt-oss-20b",
+        ),
+        "complex": os.environ.get(
+            "COMPLEX_MODEL",
+            "publishers/agent/models/qwen3-32b",
+        ),
+    }
+    HTML_FILE = Path("/app/index.html")
+
+    COMPLEX_PATTERNS = [
+        r"\bstep[- ]by[- ]step\b", r"\bstep by step\b",
+        r"\barchitecture\b", r"\barchitectural\b", r"\btrade[- ]offs?\b",
+        r"\bfailure handling\b", r"\broot cause\b",
+        r"\btroubleshoot(?:ing)?\b", r"\bdebug(?:ging)?\b",
+        r"\bcompare\b", r"\bcomparison\b", r"\banaly[sz]e\b",
+        r"\banalysis\b", r"\bcomprehensive\b", r"\bin detail\b",
+        r"\bmultiple steps\b", r"\bdesign\b", r"\bimplement(?:ation)?\b",
+        r"\boptimi[sz](?:e|ation)\b", r"\bsecurity\b", r"\bdistributed\b",
+        r"\bscalab(?:le|ility)\b", r"\bhow does .+ work\b",
+        r"\bspiega(?:mi)? nel dettaglio\b", r"\bpasso dopo passo\b",
+        r"\barchitettura\b", r"\bprogettazione\b", r"\banalizza\b",
+        r"\banalisi\b", r"\bconfronta\b", r"\bconfronto\b",
+        r"\bapprofondit[oa]\b", r"\bgestione degli errori\b",
+        r"\bcausa principale\b", r"\brisoluzione dei problemi\b",
+        r"\bottimizzazione\b", r"\bsicurezza\b", r"\bdistribuit[oa]\b",
+    ]
+    COMPLEX_REGEX = [re.compile(p, re.IGNORECASE) for p in COMPLEX_PATTERNS]
+
+
+    def extract_user_text(messages):
+        """Extract the most recent user message from an OpenAI chat request."""
+        if not isinstance(messages, list):
+            return ""
+        for message in reversed(messages):
+            if not isinstance(message, dict) or message.get("role") != "user":
+                continue
+            content = message.get("content", "")
+            if isinstance(content, str):
+                return content
+            if isinstance(content, list):
+                parts = [
+                    str(item.get("text", ""))
+                    for item in content
+                    if isinstance(item, dict) and item.get("type") == "text"
+                ]
+                return " ".join(parts)
+            return str(content)
+        return ""
+
+
+    def classify_request_heuristic(text):
+        """Safe fallback: return (route, explanation) without calling Llama."""
+        text = (text or "").strip()
+        words = re.findall(r"\b[\w'-]+\b", text, flags=re.UNICODE)
+        if len(words) >= 100:
+            return "complex", "Fallback: long request"
+        if len(words) >= 45:
+            return "complex", "Fallback: detailed request"
+        if any(pattern.search(text) for pattern in COMPLEX_REGEX):
+            return "complex", "Fallback: complexity keywords detected"
+        if text.count("\n") >= 5:
+            return "complex", "Fallback: multi-part request"
+        return "simple", "Fallback: short or straightforward request"
+
+
+    def _ssl_context(verify):
+        return ssl.create_default_context() if verify else ssl._create_unverified_context()
+
+
+    def _post_json(url, payload, headers=None, timeout=8, context=None):
+        data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        req_headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+        if headers:
+            req_headers.update(headers)
+        request = urllib.request.Request(
+            url, data=data, headers=req_headers, method="POST"
+        )
+        kwargs = {"timeout": timeout}
+        if url.lower().startswith("https://"):
+            kwargs["context"] = context or ssl.create_default_context()
+        with urllib.request.urlopen(request, **kwargs) as response:
+            raw = response.read()
+            return response.status, json.loads(raw.decode("utf-8"))
+
+
+    def classify_request_llama(text):
+        """Ask Llama for SIMPLE/COMPLEX. Raises on errors so caller can fallback."""
+        if not (text or "").strip():
+            return "simple", "Llama classified an empty/short request"
+        prompt = (
+            "Classify the user's request for model routing. "
+            "Return exactly one word: SIMPLE or COMPLEX. "
+            "SIMPLE means a short, direct, factual, or routine request. "
+            "COMPLEX means multi-step reasoning, detailed analysis, architecture, "
+            "debugging, troubleshooting, comparisons, implementation, or a long "
+            "technical task. Do not answer the user's request; only classify it."
+        )
+        payload = {
+            "model": LLAMA_MODEL,
+            "messages": [
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": (text or "")[:12000]},
+            ],
+            "temperature": 0,
+            "max_tokens": 8,
+            "stream": False,
+        }
+        _, data = _post_json(
+            LLAMA_BASE_URL + "/v1/chat/completions",
+            payload,
+            timeout=LLAMA_TIMEOUT,
+        )
+        choices = data.get("choices", [])
+        if not choices or not isinstance(choices[0], dict):
+            raise ValueError("Llama response has no choices")
+        message = choices[0].get("message", {})
+        content = message.get("content", "") if isinstance(message, dict) else ""
+        if isinstance(content, list):
+            content = " ".join(
+                str(x.get("text", "")) for x in content if isinstance(x, dict)
+            )
+        label = str(content).strip().upper()
+        # Be strict: don't accept arbitrary output or a label embedded in prose.
+        match = re.fullmatch(r"[\s`*]*(SIMPLE|COMPLEX)[\s`*.,!]*", label)
+        if not match:
+            raise ValueError("Llama returned an invalid classification")
+        route = "simple" if match.group(1) == "SIMPLE" else "complex"
+        return route, "Llama classification: " + match.group(1)
+
+
+    def classify_request(text):
+        """Use Llama first; on any classification failure use the heuristic."""
+        try:
+            return classify_request_llama(text)
+        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError,
+                ValueError, KeyError, TypeError, json.JSONDecodeError, OSError) as exc:
+            route, reason = classify_request_heuristic(text)
+            # Keep diagnostics useful without exposing prompts or credentials.
+            return route, reason + " (Llama unavailable: " + type(exc).__name__ + ")"
+
+
+    class UpstreamHTTPError(Exception):
+        def __init__(self, status_code, response_data):
+            super().__init__(str(response_data))
+            self.status_code = status_code
+            self.response_data = response_data
+
+
+    def call_maas(request_data, model):
+        """Forward the OpenAI-compatible request to MaaS."""
+        if not MAAS_API_KEY:
+            raise RuntimeError("MAAS_API_KEY is not configured in the deployment")
+        payload = dict(request_data)
+        payload["model"] = model
+        payload["stream"] = False
+        body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        request = urllib.request.Request(
+            MAAS_BASE_URL + "/v1/chat/completions",
+            data=body,
+            headers={
+                "Authorization": "Bearer " + MAAS_API_KEY,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            method="POST",
+        )
+        started = time.perf_counter()
+        try:
+            with urllib.request.urlopen(
+                request,
+                timeout=REQUEST_TIMEOUT,
+                context=_ssl_context(MAAS_TLS_VERIFY),
+            ) as response:
+                response_body = response.read()
+                status_code = response.status
+        except urllib.error.HTTPError as exc:
+            error_body = exc.read().decode("utf-8", errors="replace")
+            try:
+                error_data = json.loads(error_body)
+            except (ValueError, TypeError):
+                error_data = {"message": error_body}
+            raise UpstreamHTTPError(exc.code, error_data) from exc
+        elapsed_ms = round((time.perf_counter() - started) * 1000, 2)
+        try:
+            response_data = json.loads(response_body.decode("utf-8"))
+        except (ValueError, UnicodeDecodeError) as exc:
+            raise RuntimeError("MaaS returned a response that is not valid JSON") from exc
+        if not isinstance(response_data, dict):
+            raise RuntimeError("MaaS returned JSON that is not an object")
+        return status_code, response_data, elapsed_ms
+
+
+    def _send_json(handler, status_code, data):
+        body = json.dumps(data, ensure_ascii=False).encode("utf-8")
+        handler.send_response(status_code)
+        handler.send_header("Content-Type", "application/json; charset=utf-8")
+        handler.send_header("Content-Length", str(len(body)))
+        handler.send_header("Access-Control-Allow-Origin", "*")
+        handler.send_header("Access-Control-Allow-Headers", "Authorization, Content-Type")
+        handler.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        handler.end_headers()
+        handler.wfile.write(body)
+
+
+    def _send_html(handler):
+        if not HTML_FILE.is_file():
+            _send_json(handler, 404, {"error": {"message": "UI file not found"}})
+            return
+        body = HTML_FILE.read_bytes()
+        handler.send_response(200)
+        handler.send_header("Content-Type", "text/html; charset=utf-8")
+        handler.send_header("Content-Length", str(len(body)))
+        handler.send_header("Access-Control-Allow-Origin", "*")
+        handler.end_headers()
+        handler.wfile.write(body)
+
+
+    class Handler(BaseHTTPRequestHandler):
+        server_version = "SmartModelRouter/1.2"
+
+        def log_message(self, fmt, *args):
+            # Standard access logs only; never log request bodies or credentials.
+            super().log_message(fmt, *args)
+
+        def do_OPTIONS(self):
+            self.send_response(204)
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Headers", "Authorization, Content-Type")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+            self.end_headers()
+
+        def do_GET(self):
+            path = urlparse(self.path).path
+            if path == "/health":
+                _send_json(self, 200, {"status": "ok"})
+            elif path in ("/", "/index.html"):
+                _send_html(self)
+            elif path == "/v1/models":
+                _send_json(self, 200, {
+                    "object": "list",
+                    "data": [
+                        {"id": model, "object": "model", "owned_by": "smart-model-router"}
+                        for model in MODEL_MAP.values()
+                    ],
+                })
+            else:
+                _send_json(self, 404, {"error": {"message": "Not found"}})
+
+        def do_POST(self):
+            path = urlparse(self.path).path
+            if path not in ("/v1/chat/completions", "/chat/completions"):
+                _send_json(self, 404, {"error": {"message": "Not found"}})
+                return
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                if length <= 0:
+                    _send_json(self, 400, {"error": {"message": "Request body is required"}})
+                    return
+                raw_body = self.rfile.read(length)
+                try:
+                    request_data = json.loads(raw_body.decode("utf-8"))
+                except (ValueError, UnicodeDecodeError):
+                    _send_json(self, 400, {"error": {"message": "Invalid JSON request body"}})
+                    return
+                if not isinstance(request_data, dict):
+                    _send_json(self, 400, {"error": {"message": "JSON body must be an object"}})
+                    return
+                messages = request_data.get("messages")
+                if not isinstance(messages, list) or not messages:
+                    _send_json(self, 400, {
+                        "error": {"message": "A non-empty messages array is required"}
+                    })
+                    return
+
+                user_text = extract_user_text(messages)
+                route, decision = classify_request(user_text)
+                model = MODEL_MAP[route]
+                status_code, response_data, elapsed_ms = call_maas(request_data, model)
+                response_data["router"] = {
+                    "route": route,
+                    "model": model,
+                    "selected_model": model,
+                    "decision": decision,
+                    "response_time": elapsed_ms,
+                }
+                _send_json(self, status_code, response_data)
+            except UpstreamHTTPError as exc:
+                _send_json(self, exc.status_code, exc.response_data
+                           if isinstance(exc.response_data, dict)
+                           else {"error": {"message": str(exc.response_data)}})
+            except (urllib.error.URLError, TimeoutError, OSError) as exc:
+                _send_json(self, 502, {
+                    "error": {"message": "Upstream request failed",
+                              "type": "upstream_error",
+                              "detail": type(exc).__name__}
+                })
+            except Exception as exc:
+                # Do not return stack traces or secrets to clients.
+                print("Router request failed: " + type(exc).__name__, flush=True)
+                _send_json(self, 500, {
+                    "error": {"message": "Internal router error", "type": "internal_error"}
+                })
+
+
+    def main():
+        print("Starting Smart Model Router on port " + str(ROUTER_PORT), flush=True)
+        print("MaaS endpoint: " + MAAS_BASE_URL, flush=True)
+        print("Llama endpoint: " + LLAMA_BASE_URL, flush=True)
+        print("Simple model: " + MODEL_MAP["simple"], flush=True)
+        print("Complex model: " + MODEL_MAP["complex"], flush=True)
+        server = ThreadingHTTPServer(("0.0.0.0", ROUTER_PORT), Handler)
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            server.server_close()
+
+
+    if __name__ == "__main__":
+        main()
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: smart-router-code
+  namespace: smart-model-router

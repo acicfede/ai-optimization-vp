@@ -1,0 +1,28 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.secret.yaml
+secret.yaml
+secrets/
+kubeconfig
+kubeconfig.*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+
+# Python cache and bytecode
+__pycache__/
+*.py[cod]

@@ -1,0 +1,38 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: LLMInferenceService
+metadata:
+  name: qwen3-32b
+  namespace: agent
+  annotations:
+    opendatahub.io/hardware-profile-name: highpriority
+    opendatahub.io/hardware-profile-namespace: redhat-ods-applications
+  labels:
+    kueue.x-k8s.io/queue-name: team-inference
+spec:
+  model:
+    name: qwen3-32b
+    uri: s3://models/models/Qwen3-32B-FP8
+  replicas: 2
+  router:
+    gateway:
+      refs:
+        - name: maas-default-gateway
+          namespace: openshift-ingress
+    route: {}
+    scheduler: {}
+  template:
+    containers:
+      - name: main
+        env:
+          - name: VLLM_ADDITIONAL_ARGS
+            value: "--enable-auto-tool-choice --tensor-parallel-size=2 --max-model-len=20000 --tool-call-parser=hermes --gpu-memory-utilization=0.9"
+        resources:
+          requests:
+            cpu: "8"
+            memory: 16Gi
+            nvidia.com/gpu: "2"
+          limits:
+            cpu: "32"
+            memory: 128Gi
+            nvidia.com/gpu: "2"
+    serviceAccountName: qwen323-sa
